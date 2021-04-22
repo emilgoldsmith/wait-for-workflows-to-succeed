@@ -1,0 +1,14 @@
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Try out action
+        uses: ./
+        with:
+          workflows: ci.yml
