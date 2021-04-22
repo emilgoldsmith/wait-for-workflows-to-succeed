@@ -31,23 +31,27 @@ try {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   };
 
-  // (async () => {
-  //   try {
-  //     let executedTime = 0;
-  //     let done = false;
-  //     while (!done) {
-  //       done = await checkIfWorkflowDone();
-  //       await sleep(waitInterval);
-  //       executedTime += waitInterval;
-  //       if (executedTime > waitMax) {
-  //         core.setFailed("Time exceeded the maximum " + waitMax + " seconds");
-  //         break;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     core.setFailed(error.message);
-  //   }
-  // })();
+  (async () => {
+    try {
+      let executedTime = 0;
+      let done = false;
+      while (!done) {
+        for (workflow of workflows) {
+          done = await checkIfWorkflowDone(workflow);
+          if (done == false) break;
+        }
+        await sleep(waitInterval);
+        executedTime += waitInterval;
+        if (executedTime > waitMax) {
+          core.setFailed("Time exceeded the maximum " + waitMax + " seconds");
+          break;
+        }
+
+      }
+    } catch (error) {
+      core.setFailed(error.message);
+    }
+  })();
 } catch (error) {
   core.setFailed(error.message);
 }
