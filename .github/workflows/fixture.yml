@@ -1,5 +1,7 @@
 name: Test Fixture
-on: push
+on:
+  - push
+  - pull_request
 
 jobs:
   suceeds:
