@@ -42,6 +42,7 @@ try {
           done = await checkIfWorkflowDone(workflow);
           if (done == false) break;
         }
+        if (done) break;
         await sleep(waitInterval);
         executedTime += waitInterval;
         if (executedTime > waitMax) {

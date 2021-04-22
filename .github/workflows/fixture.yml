@@ -1,7 +1,11 @@
+name: Test Fixture
 on: push
 
 jobs:
   suceeds:
+    name: Succeeds Slowly
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Success!"
+      - name: Sleep
+        shell: bash
+        run: sleep 20
