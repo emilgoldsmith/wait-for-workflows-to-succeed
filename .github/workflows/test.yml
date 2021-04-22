@@ -10,8 +10,8 @@ jobs:
 
       - name: Try out action
         uses: ./
-        # with:
-        #   workflows: fixture.yml
-        #   wait-interval: 15
-        #   wait-max: 30
-        #   repo-token: ${{ github.token }}
+        with:
+          workflows: fixture.yml
+          wait-interval: 15
+          wait-max: 30
+          repo-token: ${{ github.token }}
