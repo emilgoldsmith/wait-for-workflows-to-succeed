@@ -1,0 +1,21 @@
+name: Wait For Workflows To Succeed
+inputs:
+  wait-interval:
+    description: Seconds to wait between checks
+    required: true
+
+  wait-max:
+    description: Max seconds to wait all checks
+    required: true
+
+  repo-token:
+    description: Token for github-api calls
+    required: true
+
+  workflows:
+    description: The Workflows To Wait For
+    required: true
+
+runs:
+  using: "node12"
+  main: "index.js"
