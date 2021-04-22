@@ -11,4 +11,7 @@ jobs:
       - name: Try out action
         uses: ./
         with:
-          workflows: ci.yml
+          workflows: fixture.yml
+          wait-interval: 15
+          wait-max: 30
+          repo-token: ${{ github.token }}

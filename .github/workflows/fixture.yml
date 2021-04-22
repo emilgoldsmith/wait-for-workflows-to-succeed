@@ -1,0 +1,7 @@
+on: push
+
+jobs:
+  suceeds:
+    runs-on: ubuntu-latest:
+    steps:
+      - run: echo "Success!"
