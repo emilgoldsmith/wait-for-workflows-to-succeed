@@ -21,11 +21,10 @@ try {
       repo,
       workflow_id: workflowName,
       per_page: 10,
-      ...(github.context.eventName === 'push' ? {
-        branch: github.context.ref.split('refs/heads/')[1]
-      } : {})
+      branch: github.context.ref.split('refs/heads/')[1]
     });
-    console.log(JSON.stringify(data));
+    console.log(data.workflow_runs);
+    console.log(data.workflow_runs.map(x => x.pull_requests))
     return true;
   };
 
