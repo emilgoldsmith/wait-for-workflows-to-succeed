@@ -26,7 +26,9 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 5,
       });
+      core.info(JSON.stringify(data.workflow_runs, null, 4));
       const filteredForSha = data.workflow_runs.filter(x => x.head_sha === github.context.sha)
+      core.info(JSON.stringify(filteredForSha, null, 4));
       if (filteredForSha.length < 1) return false;
       const mostRecent = filteredForSha[0];
       if (mostRecent.status !== 'completed') return false;
@@ -41,6 +43,9 @@ try {
       owner, repo, run_id: github.context.runId
     });
     const startDiff = new Date(created_at).getTime() - new Date(waiting_created_at).getTime();
+    core.info(created_at);
+    core.info(waiting_created_at);
+    core.info(startDiff);
     if (startDiff > 5000) {
       // If it was created more than 5 seconds before this workflow we assume it was in relation to something else
       return false;
