@@ -3,6 +3,23 @@
 [![Acceptance Tests](https://github.com/emilgoldsmith/wait-for-workflows-to-succeed/actions/workflows/acceptance-tests.yml/badge.svg)](https://github.com/emilgoldsmith/wait-for-workflows-to-succeed/actions/workflows/acceptance-tests.yml)
 
 
-This is mainly meant for personal use, so apologies that I'm not writing a comprehensive README. pull requests for a better README are welcome though.
+This is mainly meant for personal use, the README is quite simple. Feel free to PR README improvements if interested.
 
-See action.yml for the arguments, they are hopefully self explanatory
+```yml
+inputs:
+  wait-interval-seconds:
+    description: Seconds to wait between checks
+    required: true
+
+  wait-max-seconds:
+    description: Max seconds to wait in total before failing
+    required: true
+
+  repo-token:
+    description: The ${{ github.token }} or $GITHUB_TOKEN repo token for your workflow
+    required: true
+
+  workflows:
+    description: The workflows to wait for. Either specify one as a normal string or several workflows as newline separated strings with forexample the | multiline YAML syntax
+    required: true
+```
