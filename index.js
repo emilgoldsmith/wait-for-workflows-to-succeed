@@ -16,8 +16,9 @@ try {
   const { owner, repo } = github.context.repo;
 
   const checkIfWorkflowDone = async function (workflowName) {
+    let data;
     try {
-      const { data } = await octokit.actions.listWorkflowRuns({
+      response = await octokit.actions.listWorkflowRuns({
         owner,
         repo,
         workflow_id: workflowName,
@@ -25,6 +26,7 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 1,
       });
+      data = response.data;
     } catch (e) {
       return false;
     }
