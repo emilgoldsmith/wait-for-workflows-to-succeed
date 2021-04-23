@@ -1,0 +1,18 @@
+on: push
+
+jobs:
+  add-to-pr:
+    name: Add to the test PR for a PR event
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Do the add
+        run: |
+          git fetch origin test
+          git checkout test
+          echo "an addition" >> test
+          git add test
+          git commit -m "A commit to trigger a PR event for testing"
+          git push origin test
