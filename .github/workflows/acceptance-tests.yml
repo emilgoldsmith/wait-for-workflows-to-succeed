@@ -81,6 +81,7 @@ jobs:
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
+          debug: "on"
 
       - name: Assert error occurred
         if: ${{ steps.test.outcome != 'failure' }}

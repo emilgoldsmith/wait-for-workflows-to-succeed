@@ -91,7 +91,16 @@ try {
 
     if (debug >= DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
     if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${JSON.stringify(data.workflow_runs.map(x => x.created_at))}`);
-    const theMatch = filteredForSha.find(x => x.created_at === created_at);
+    const theMatch = filteredForSha.find(x => {
+      if (options.event === github.context.eventName) {
+        if (debug >= DEBUG_ON) core.info('Doing exact comparison');
+        return x.created_at === created_at;
+      } else {
+        // For different events created_ats can differ a bit so give some leeway
+        if (debug >= DEBUG_ON) core.info('Doing within 3 seconds comparison');
+        return Math.abs(new Date(x.created_at).getTime() - new Date(created_at).getTime()) < 3000;
+      }
+    });
     if (!theMatch) {
       if (debug >= DEBUG_ON) core.info(`No SHA matches matched the created_at`)
       return undefined;
