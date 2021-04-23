@@ -9,6 +9,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Do the add
+        env:
+          # Use our own custom token so that PR events actually trigger
+          # which are auto disabled for avoiding recursive triggers for
+          # the token provided with the workflow
+          GITHUB_TOKEN: ${{ secrets.CUSTOM_TOKEN }}
         run: |
           git config --global user.email "emil.goldsmith@gmail.com"
           git config --global user.name "Emil Goldsmith Olesen"
