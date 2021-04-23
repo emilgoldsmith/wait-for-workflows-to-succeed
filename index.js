@@ -47,7 +47,6 @@ try {
   (async () => {
     try {
       let executedTime = 0;
-      let done = false;
       let workflowsStillNotDone = [...workflows];
       while (workflowsStillNotDone.length > 0) {
         workflows = [...workflowsStillNotDone];
