@@ -27,15 +27,16 @@ try {
       debug = DEBUG_OFF;
   }
 
+  const { data: { created_at } } = await octokit.actions.getWorkflowRun({
+    owner, repo, run_id: github.context.runId
+  });
+
   const octokit = github.getOctokit(token);
   const { owner, repo } = github.context.repo;
   if (debug >= DEBUG_ON) core.info(`owner: ${owner}\nrepo: ${repo}`);
 
   const checkIfWorkflowDone = async function (workflowName) {
     let conclusion, waiting_created_at;
-    const { data: { created_at } } = await octokit.actions.getWorkflowRun({
-      owner, repo, run_id: github.context.runId
-    });
     try {
       const options = {
         owner,
