@@ -16,9 +16,9 @@ try {
   const { owner, repo } = github.context.repo;
 
   const checkIfWorkflowDone = async function (workflowName) {
-    let data;
+    let conclusion;
     try {
-      response = await octokit.actions.listWorkflowRuns({
+      const { data } = await octokit.actions.listWorkflowRuns({
         owner,
         repo,
         workflow_id: workflowName,
@@ -27,12 +27,16 @@ try {
         per_page: 1,
       });
       data = response.data;
+      if (data.workflow_runs.length < 1) return false;
+      const mostRecent = data.workflow_runs[0];
+      console.log(JSON.stringify(context.event, null, 4));
+      if (mostRecent.status !== 'completed') return false;
+      conclusion = mostRecent.conclusion;
     } catch (e) {
       return false;
     }
-    if (data.workflow_runs.length < 1) return false;
-    const mostRecent = data.workflow_runs[0];
-
+    if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
+    return true;
   };
 
   const sleep = async function (seconds) {
