@@ -3,17 +3,83 @@ on:
   - pull_request
 
 jobs:
-  test:
+  with-succeeding-workflow:
+    name: Should Succeed (waiting for succeeding workflow)
     runs-on: ubuntu-latest
-    name: Test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Try out action
+      - name: Wait for success-fixture
         uses: ./
         with:
-          workflows: fixture.yml
-          wait-interval: 15
-          wait-max: 30
+          workflows: success-fixture.yml
+          wait-interval: 5
+          wait-max: 60
           repo-token: ${{ github.token }}
+
+  workflow-doesnt-exist:
+    name: Should Fail (waiting for non existent workflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for non-existent workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: non-existent.yml
+          wait-interval: 5
+          wait-max: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  workflow-run-failed:
+    name: Should Fail (waiting for failing workflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for failing workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: failure-fixture.yml
+          wait-interval: 5
+          wait-max: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  workflow-succeeded-in-the-past:
+    name: Should Fail (waiting for workflow that isn't running now but did in the past)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for failing workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          # This was an old name for a workflow, as can be
+          # seen by it not running anymore we name-changed it
+          # but it can be used for this purpose
+          workflows: fixture.yml
+          wait-interval: 5
+          wait-max: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1

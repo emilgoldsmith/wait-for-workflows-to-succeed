@@ -20,12 +20,13 @@ try {
       owner,
       repo,
       workflow_id: workflowName,
-      per_page: 10,
-      branch: github.context.ref.split('refs/heads/')[1]
+      event: github.context.eventName,
+      branch: github.context.ref.split('refs/heads/')[1],
+      per_page: 1,
     });
-    console.log(data.workflow_runs);
-    console.log(data.workflow_runs.map(x => x.pull_requests))
-    return true;
+    if (data.workflow_runs.length < 1) return false;
+    const mostRecent = data.workflow_runs[0];
+
   };
 
   const sleep = async function (seconds) {
