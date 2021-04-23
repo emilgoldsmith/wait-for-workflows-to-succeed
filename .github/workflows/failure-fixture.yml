@@ -1,4 +1,4 @@
-name: Failure Fixture
+name: Fast Failure Fixture
 on:
   - push
   - pull_request
@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Sleep
         shell: bash
-        run: sleep 30
+        run: sleep 5
 
       - name: Fail
         run: echo "Fail" && exit 1

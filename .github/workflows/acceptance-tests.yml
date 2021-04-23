@@ -1,0 +1,172 @@
+name: Acceptance Tests
+on:
+  - push
+  - pull_request
+
+jobs:
+  with-succeeding-workflow:
+    name: Should Succeed (waiting for succeeding workflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for success-fixture
+        uses: ./
+        with:
+          workflows: success-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+  with-two-succeeding-workflows:
+    name: Should Succeed (waiting for two succeeding workflows)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for success-fixture
+        uses: ./
+        with:
+          workflows: |
+            success-fixture.yml
+            fast-success-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+  workflow-doesnt-exist:
+    name: Should Fail (waiting for non existent workflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for non-existent workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: non-existent.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  workflow-run-failed:
+    name: Should Fail (waiting for failing workflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for failing workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: failure-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  workflow-succeeded-in-the-past:
+    name: Should Fail (waiting for workflow that isn't running now but did in the past)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for failing workflow
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          # This was an old name for a workflow, as can be
+          # seen by it not running anymore we name-changed it
+          # but it can be used for this purpose
+          workflows: fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  one-failed-one-succeeded-success-first:
+    name: Should Fail (one failed and one succeeded with success first)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for one failing and one succeeding workflow with success first
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: |
+            fast-success-fixture.yml
+            failure-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  one-failed-one-succeeded-failure-first:
+    name: Should Fail (one failed and one succeeded with failure first)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for one failing and one succeeding workflow with failure first
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: |
+            success-fixture.yml
+            fast-failure-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
+
+  two-failed:
+    name: Should Fail (waiting on two failed)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for two failing
+        continue-on-error: true
+        id: test
+        uses: ./
+        with:
+          workflows: |
+            fast-failure-fixture.yml
+            failure-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+
+      - name: Assert error occurred
+        if: ${{ steps.test.outcome != 'failure' }}
+        run: echo "This should have failed" && exit 1
