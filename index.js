@@ -46,7 +46,7 @@ try {
         per_page: 5,
       }
       if (debug >= DEBUG_ON) core.info("The request options for listWorkflowRuns are: " + JSON.stringify(options));
-      const { data } = await octokit.actions.listWorkflowRuns();
+      const { data } = await octokit.actions.listWorkflowRuns(options);
       const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
       if (debug >= DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
       if (debug >= DEBUG_ON) core.info(`candidateShas: ${JSON.stringify(data.workflow_runs.map(x => x.head_sha))}`);
