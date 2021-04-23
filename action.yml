@@ -21,6 +21,11 @@ inputs:
     description: The workflows to wait for. Either specify one as a normal string or several workflows as newline separated strings with forexample the | multiline YAML syntax
     required: true
 
+  debug:
+    description: Whether or not to have debug logs show. Possible values are `on`, `off`, and `verbose`
+    required: false
+    default: "off"
+
 runs:
   using: "node12"
   main: "index.js"
