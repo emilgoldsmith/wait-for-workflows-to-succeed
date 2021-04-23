@@ -1,7 +1,9 @@
 name: Wait For Workflows To Succeed
+author: Emil Goldsmith Olesen
 description: Given a list of local workflow file names, wait for ones that were created for the same push/pull_request event to succeed
-icon: activity
-color: blue
+branding:
+  icon: activity
+  color: blue
 inputs:
   wait-interval-seconds:
     description: Seconds to wait between checks
