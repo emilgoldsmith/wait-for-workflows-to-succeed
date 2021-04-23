@@ -28,7 +28,7 @@ try {
       });
       if (data.workflow_runs.length < 1) return false;
       const mostRecent = data.workflow_runs[0];
-      console.log(JSON.stringify(context.event, null, 4));
+      console.log(JSON.stringify(github.context.event, null, 4));
       if (mostRecent.status !== 'completed') return false;
       conclusion = mostRecent.conclusion;
     } catch (e) {
