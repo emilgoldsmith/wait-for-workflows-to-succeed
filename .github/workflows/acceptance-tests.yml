@@ -188,7 +188,7 @@ jobs:
           debug: "on"
 
   logging-verbose:
-    name: With logging on
+    name: With logging verbose
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
