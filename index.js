@@ -16,7 +16,7 @@ try {
   const { owner, repo } = github.context.repo;
 
   const checkIfWorkflowDone = async function (workflowName) {
-    let conclusion, run_id, waiting_created_at;
+    let conclusion, waiting_created_at;
     try {
       console.log({
         owner,
@@ -39,7 +39,6 @@ try {
       const mostRecent = filteredForSha[0];
       if (mostRecent.status !== 'completed') return false;
       conclusion = mostRecent.conclusion;
-      run_id = mostRecent.run_id;
       waiting_created_at = data.created_at;
     } catch (e) {
       core.info(e);
@@ -47,7 +46,7 @@ try {
     }
     if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
     const { data: { created_at } } = await octokit.actions.getWorkflowRun({
-      owner, repo, run_id
+      owner, repo, run_id: github.context.runId
     });
     const startDiff = new Date(created_at).getTime() - new Date(waiting_created_at).getTime();
     if (startDiff > 5000) {
