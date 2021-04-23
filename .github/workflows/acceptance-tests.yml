@@ -27,6 +27,7 @@ jobs:
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
+          debug: "on"
 
   with-succeeding-workflow:
     name: Should Succeed (waiting for succeeding workflow)
