@@ -1,13 +1,13 @@
-name: Fast Success Fixture
+name: Success Fixture
 on:
   - push
   - pull_request
 
 jobs:
   suceeds:
-    name: Succeeds Fast
+    name: Succeeds Slowly
     runs-on: ubuntu-latest
     steps:
       - name: Sleep
         shell: bash
-        run: sleep 10
+        run: sleep 30

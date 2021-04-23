@@ -5,9 +5,9 @@ on:
 
 jobs:
   suceeds:
-    name: Succeeds Slowly
+    name: Succeeds Fast
     runs-on: ubuntu-latest
     steps:
       - name: Sleep
         shell: bash
-        run: sleep 30
+        run: sleep 10

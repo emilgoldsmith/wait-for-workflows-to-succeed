@@ -1,16 +1,16 @@
-name: Failure Fixture
+name: Fast Failure Fixture
 on:
   - push
   - pull_request
 
 jobs:
   suceeds:
-    name: Fails Slowly
+    name: Fails Fast
     runs-on: ubuntu-latest
     steps:
       - name: Sleep
         shell: bash
-        run: sleep 30
+        run: sleep 10
 
       - name: Fail
         run: echo "Fail" && exit 1
