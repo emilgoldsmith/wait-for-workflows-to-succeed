@@ -26,17 +26,13 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 5,
       });
-      core.info(JSON.stringify(github.context, null, 4));
-      core.info(JSON.stringify(data.workflow_runs, null, 4));
-      core.info(github.context.sha);
       const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
       const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
-      core.info(JSON.stringify(filteredForSha, null, 4));
       if (filteredForSha.length < 1) return false;
       const mostRecent = filteredForSha[0];
       if (mostRecent.status !== 'completed') return false;
       conclusion = mostRecent.conclusion;
-      waiting_created_at = data.created_at;
+      waiting_created_at = mostRecent.created_at;
     } catch (e) {
       core.info(e);
       return false;
