@@ -18,6 +18,14 @@ try {
   const checkIfWorkflowDone = async function (workflowName) {
     let conclusion;
     try {
+      console.log({
+        owner,
+        repo,
+        workflow_id: workflowName,
+        event: github.context.eventName,
+        branch: github.context.ref.split('refs/heads/')[1],
+        per_page: 1,
+      })
       const { data } = await octokit.actions.listWorkflowRuns({
         owner,
         repo,
