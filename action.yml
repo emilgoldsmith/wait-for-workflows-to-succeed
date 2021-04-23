@@ -1,19 +1,20 @@
 name: Wait For Workflows To Succeed
+description: Given a list of local workflow file names, wait for ones that were created for the same push/pull_request event to succeed
 inputs:
   wait-interval-seconds:
     description: Seconds to wait between checks
     required: true
 
   wait-max-seconds:
-    description: Max seconds to wait all checks
+    description: Max seconds to wait in total before failing
     required: true
 
   repo-token:
-    description: Token for github-api calls
+    description: The ${{ github.token }} or $GITHUB_TOKEN repo token for your workflow
     required: true
 
   workflows:
-    description: The Workflows To Wait For
+    description: The workflows to wait for. Either specify one as a normal string or several workflows as newline separated strings with forexample the | multiline YAML syntax
     required: true
 
 runs:
