@@ -37,7 +37,6 @@ try {
       const filteredForSha = data.workflow_runs.filter(x => x.head_sha === github.context.sha)
       if (filteredForSha.length < 1) return false;
       const mostRecent = filteredForSha[0];
-      console.log(JSON.stringify(github.context, null, 4));
       if (mostRecent.status !== 'completed') return false;
       conclusion = mostRecent.conclusion;
       run_id = mostRecent.run_id;
