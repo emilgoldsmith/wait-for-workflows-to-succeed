@@ -29,7 +29,7 @@ try {
 
   const octokit = github.getOctokit(token);
   const { owner, repo } = github.context.repo;
-  if (debug > DEBUG_ON) core.info(`owner: ${owner}\nrepo: ${repo}`);
+  if (debug >= DEBUG_ON) core.info(`owner: ${owner}\nrepo: ${repo}`);
 
   const checkIfWorkflowDone = async function (workflowName) {
     let conclusion, waiting_created_at;
@@ -46,32 +46,32 @@ try {
         per_page: 5,
       });
       const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
-      if (debug > DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
-      if (debug > DEBUG_ON) core.info(`candidateShas: ${data.workflow_runs.map(x => x.head_sha)}`);
-      if (debug > DEBUG_VERBOSE) core.info(`all candidate information: ${JSON.stringify(data, null, 4)}`)
+      if (debug >= DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
+      if (debug >= DEBUG_ON) core.info(`candidateShas: ${data.workflow_runs.map(x => x.head_sha)}`);
+      if (debug >= DEBUG_VERBOSE) core.info(`all candidate information: ${JSON.stringify(data, null, 4)}`)
       const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
       if (filteredForSha.length < 1) {
         if (debug > DEBUG_ON) core.info(`No Candidates Matched`);
         return false;
       }
 
-      if (debug > DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
-      if (debug > DEBUG_ON) core.info(`created_ats of candidates: ${data.workflow_runs.map(x => x.created_at)}`);
+      if (debug >= DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
+      if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${data.workflow_runs.map(x => x.created_at)}`);
       const theMatch = filteredForSha.find(x => x.created_at === created_at);
       if (!theMatch) {
-        if (debug > DEBUG_ON) core.info(`No sha matches matched the created_at`)
+        if (debug >= DEBUG_ON) core.info(`No sha matches matched the created_at`)
         return false
       }
-      if (debug > DEBUG_VERBOSE) core.info(`all matched candidate information: ${JSON.stringify(data, null, 4)}`)
-      if (debug > DEBUG_ON) core.info(`chosen candidate status: ${theMatch.status}`);
+      if (debug >= DEBUG_VERBOSE) core.info(`all matched candidate information: ${JSON.stringify(data, null, 4)}`)
+      if (debug >= DEBUG_ON) core.info(`chosen candidate status: ${theMatch.status}`);
       if (theMatch.status !== 'completed') {
-        if (debug > DEBUG_ON) core.info(`Not Yet Completed`);
+        if (debug >= DEBUG_ON) core.info(`Not Yet Completed`);
         return false;
       }
       conclusion = theMatch.conclusion;
       waiting_created_at = theMatch.created_at;
     } catch (e) {
-      if (debug > DEBUG_ON) core.info("Error caught:\n" + e.toString());
+      if (debug >= DEBUG_ON) core.info("Error caught:\n" + e.toString());
       return false;
     }
     if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
