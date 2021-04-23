@@ -88,16 +88,16 @@ try {
       let workflowsStillNotDone = [...workflows];
       while (workflowsStillNotDone.length > 0) {
         workflows = [...workflowsStillNotDone];
-        for (workflow of workflows) {
+        for (workflowName of workflows) {
           core.info(`Checking ${workflowName}`)
-          const done = await checkIfWorkflowDone(workflow);
+          const done = await checkIfWorkflowDone(workflowName);
           if (done == false) {
             core.info(`${workflowName} not done yet`);
             break;
           }
-          core.info(`Workflow ${workflow} is done after ${executedTime} seconds`);
+          core.info(`Workflow ${workflowName} is done after ${executedTime} seconds`);
           // It is done so we don't need to keep checking it
-          workflowsStillNotDone = workflowsStillNotDone.filter(x => x !== workflow);
+          workflowsStillNotDone = workflowsStillNotDone.filter(x => x !== workflowName);
         }
         if (workflowsStillNotDone.length === 0) break;
         await sleep(waitInterval);
