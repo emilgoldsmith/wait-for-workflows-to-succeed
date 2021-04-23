@@ -26,6 +26,7 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 5,
       });
+      core.info(JSON.stringify(github.context, null, 4));
       core.info(JSON.stringify(data.workflow_runs, null, 4));
       core.info(github.context.sha);
       // const shaGetter = x => github.context.eventName === 'pull_request' ? x.pull_requests[0].base.sha
