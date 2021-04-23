@@ -26,7 +26,6 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 1,
       });
-      data = response.data;
       if (data.workflow_runs.length < 1) return false;
       const mostRecent = data.workflow_runs[0];
       console.log(JSON.stringify(context.event, null, 4));
