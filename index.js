@@ -15,6 +15,7 @@ try {
     .split("\n")
     .map((x) => x.trim());
   const debugString = core.getInput("debug", { required: false });
+  core.info(JSON.stringify(github.context, null, 4))
   let debug;
   switch (debugString.toLowerCase()) {
     case "on":
