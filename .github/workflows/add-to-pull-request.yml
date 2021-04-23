@@ -10,6 +10,8 @@ jobs:
 
       - name: Do the add
         run: |
+          git config --global user.email "emil.goldsmith@gmail.com"
+          git config --global user.name "Emil Goldsmith Olesen"
           git fetch origin test
           git checkout test
           echo "an addition" >> test
