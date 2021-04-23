@@ -45,26 +45,22 @@ try {
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 5,
       }
-      if (debug >= DEBUG_ON) core.info("The request options for listWorkflowRuns are: " + JSON.stringify(options));
-      const { data } = await octokit.actions.listWorkflowRuns(options);
-      const mainSha = github.context.eventName.startsWith('pull_request') ? github.context.payload.pull_request.head.sha : github.context.sha;
-      if (debug >= DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
-      if (debug >= DEBUG_ON) core.info(`candidateShas: ${JSON.stringify(data.workflow_runs.map(x => x.head_sha))}`);
-      if (debug >= DEBUG_VERBOSE) core.info(`all candidate information: ${JSON.stringify(data, null, 4)}`)
-      const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
-      if (filteredForSha.length < 1) {
-        if (debug >= DEBUG_ON) core.info(`No Candidates Matched`);
+      if (debug >= DEBUG_ON) core.info("Trying to match on same event name as current event");
+      let theMatch = await getMatch(options);
+      if (theMatch === undefined) {
+        if (options.event === 'pull_request') {
+          if (debug >= DEBUG_ON) core.info("Trying to match on pull_request_target event for pull_request event");
+          theMatch = await getMatch({ ...options, event: 'pull_request_target' })
+        }
+        else if (options.event === 'pull_request_target') {
+          if (debug >= DEBUG_ON) core.info("Trying to match on pull_request event for pull_request_target event");
+          theMatch = await getMatch({ ...options, event: 'pull_request' })
+        }
+      }
+      if (theMatch === undefined) {
+        if (debug >= DEBUG_ON) core.info("No matching methods found anything");
         return false;
       }
-
-      if (debug >= DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
-      if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${JSON.stringify(data.workflow_runs.map(x => x.created_at))}`);
-      const theMatch = filteredForSha.find(x => x.created_at === created_at);
-      if (!theMatch) {
-        if (debug >= DEBUG_ON) core.info(`No sha matches matched the created_at`)
-        return false
-      }
-      if (debug >= DEBUG_VERBOSE) core.info(`all matched candidate information: ${JSON.stringify(data, null, 4)}`)
       if (debug >= DEBUG_ON) core.info(`chosen candidate status: ${theMatch.status}`);
       if (theMatch.status !== 'completed') {
         if (debug >= DEBUG_ON) core.info(`Not Yet Completed`);
@@ -79,6 +75,29 @@ try {
     if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
     return true;
   };
+  async function getMatch(options) {
+    if (debug >= DEBUG_ON) core.info("The request options for listWorkflowRuns are: " + JSON.stringify(options));
+    const { data } = await octokit.actions.listWorkflowRuns(options);
+    if (debug >= DEBUG_VERBOSE) core.info(`all matched candidate information: ${JSON.stringify(data, null, 4)}`)
+    const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
+    if (debug >= DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
+    if (debug >= DEBUG_ON) core.info(`candidateShas: ${JSON.stringify(data.workflow_runs.map(x => x.head_sha))}`);
+    if (debug >= DEBUG_VERBOSE) core.info(`all candidate information: ${JSON.stringify(data, null, 4)}`)
+    const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
+    if (filteredForSha.length < 1) {
+      if (debug >= DEBUG_ON) core.info(`No Candidates Matched on SHA`);
+      return undefined;
+    }
+
+    if (debug >= DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
+    if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${JSON.stringify(data.workflow_runs.map(x => x.created_at))}`);
+    const theMatch = filteredForSha.find(x => x.created_at === created_at);
+    if (!theMatch) {
+      if (debug >= DEBUG_ON) core.info(`No SHA matches matched the created_at`)
+      return undefined;
+    }
+    return theMatch;
+  }
 
   const sleep = async function (seconds) {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
