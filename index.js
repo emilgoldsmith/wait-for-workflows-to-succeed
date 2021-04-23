@@ -41,12 +41,8 @@ try {
     const { data: { created_at } } = await octokit.actions.getWorkflowRun({
       owner, repo, run_id: github.context.runId
     });
-    const startDiff = new Date(created_at).getTime() - new Date(waiting_created_at).getTime();
-    core.info(created_at);
-    core.info(waiting_created_at);
-    core.info(startDiff);
-    if (startDiff > 5000) {
-      // If it was created more than 5 seconds before this workflow we assume it was in relation to something else
+    if (created_at !== waiting_created_at) {
+      // We expect the workflows to have been created together
       return false;
     }
     return true;
