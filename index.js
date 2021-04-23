@@ -16,14 +16,18 @@ try {
   const { owner, repo } = github.context.repo;
 
   const checkIfWorkflowDone = async function (workflowName) {
-    const { data } = await octokit.actions.listWorkflowRuns({
-      owner,
-      repo,
-      workflow_id: workflowName,
-      event: github.context.eventName,
-      branch: github.context.ref.split('refs/heads/')[1],
-      per_page: 1,
-    });
+    try {
+      const { data } = await octokit.actions.listWorkflowRuns({
+        owner,
+        repo,
+        workflow_id: workflowName,
+        event: github.context.eventName,
+        branch: github.context.ref.split('refs/heads/')[1],
+        per_page: 1,
+      });
+    } catch (e) {
+      return false;
+    }
     if (data.workflow_runs.length < 1) return false;
     const mostRecent = data.workflow_runs[0];
 
