@@ -1,10 +1,10 @@
 name: Wait For Workflows To Succeed
 inputs:
-  wait-interval:
+  wait-interval-seconds:
     description: Seconds to wait between checks
     required: true
 
-  wait-max:
+  wait-max-seconds:
     description: Max seconds to wait all checks
     required: true
 

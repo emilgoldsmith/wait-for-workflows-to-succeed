@@ -3,9 +3,9 @@ const github = require("@actions/github");
 
 try {
   const waitInterval = parseInt(
-    core.getInput("wait-interval", { required: true })
+    core.getInput("wait-interval-seconds", { required: true })
   );
-  const waitMax = parseInt(core.getInput("wait-max", { required: true }));
+  const waitMax = parseInt(core.getInput("wait-max-seconds", { required: true }));
   const token = core.getInput("repo-token", { required: true });
   const workflows = core
     .getInput("workflows", { required: true })
@@ -33,6 +33,7 @@ try {
       if (mostRecent.status !== 'completed') return false;
       conclusion = mostRecent.conclusion;
     } catch (e) {
+      core.info(e);
       return false;
     }
     if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
@@ -47,19 +48,23 @@ try {
     try {
       let executedTime = 0;
       let done = false;
-      while (!done) {
+      let workflowsStillNotDone = [...workflows];
+      while (workflowsStillNotDone.length > 0) {
+        workflows = [...workflowsStillNotDone];
         for (workflow of workflows) {
-          done = await checkIfWorkflowDone(workflow);
+          const done = await checkIfWorkflowDone(workflow);
           if (done == false) break;
+          core.info(`Workflow ${workflow} is done after ${executedTime} seconds`);
+          // It is done so we don't need to keep checking it
+          workflowsStillNotDone = workflowsStillNotDone.filter(x => x !== workflow);
         }
-        if (done) break;
+        if (workflowsStillNotDone.length === 0) break;
         await sleep(waitInterval);
         executedTime += waitInterval;
         if (executedTime > waitMax) {
           core.setFailed("Time exceeded the maximum " + waitMax + " seconds");
           break;
         }
-
       }
     } catch (error) {
       core.setFailed(error.message);

@@ -14,8 +14,8 @@ jobs:
         uses: ./
         with:
           workflows: success-fixture.yml
-          wait-interval: 5
-          wait-max: 60
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
           repo-token: ${{ github.token }}
 
   workflow-doesnt-exist:
@@ -31,8 +31,8 @@ jobs:
         uses: ./
         with:
           workflows: non-existent.yml
-          wait-interval: 5
-          wait-max: 60
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
           repo-token: ${{ github.token }}
 
       - name: Assert error occurred
@@ -52,8 +52,8 @@ jobs:
         uses: ./
         with:
           workflows: failure-fixture.yml
-          wait-interval: 5
-          wait-max: 60
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
           repo-token: ${{ github.token }}
 
       - name: Assert error occurred
@@ -76,8 +76,8 @@ jobs:
           # seen by it not running anymore we name-changed it
           # but it can be used for this purpose
           workflows: fixture.yml
-          wait-interval: 5
-          wait-max: 60
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
           repo-token: ${{ github.token }}
 
       - name: Assert error occurred
