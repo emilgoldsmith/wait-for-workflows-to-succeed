@@ -27,15 +27,11 @@ try {
       debug = DEBUG_OFF;
   }
 
-  const { data: { created_at } } = await octokit.actions.getWorkflowRun({
-    owner, repo, run_id: github.context.runId
-  });
-
   const octokit = github.getOctokit(token);
   const { owner, repo } = github.context.repo;
   if (debug >= DEBUG_ON) core.info(`owner: ${owner}\nrepo: ${repo}`);
 
-  const checkIfWorkflowDone = async function (workflowName) {
+  const checkIfWorkflowDone = async function (workflowName, created_at) {
     let conclusion, waiting_created_at;
     try {
       const options = {
@@ -47,15 +43,15 @@ try {
         per_page: 5,
       }
       if (debug >= DEBUG_ON) core.info("Trying to match on same event name as current event");
-      let theMatch = await getMatch(options);
+      let theMatch = await getMatch(options, created_at);
       if (theMatch === undefined) {
         if (options.event === 'pull_request') {
           if (debug >= DEBUG_ON) core.info("Trying to match on pull_request_target event for pull_request event");
-          theMatch = await getMatch({ ...options, event: 'pull_request_target' })
+          theMatch = await getMatch({ ...options, event: 'pull_request_target' }, created_at)
         }
         else if (options.event === 'pull_request_target') {
           if (debug >= DEBUG_ON) core.info("Trying to match on pull_request event for pull_request_target event");
-          theMatch = await getMatch({ ...options, event: 'pull_request' })
+          theMatch = await getMatch({ ...options, event: 'pull_request' }, created_at)
         }
       }
       if (theMatch === undefined) {
@@ -70,13 +66,16 @@ try {
       conclusion = theMatch.conclusion;
       waiting_created_at = theMatch.created_at;
     } catch (e) {
-      if (debug >= DEBUG_ON) core.info("Error caught:\n" + e.toString());
-      return false;
+      if (e.message === "Not Found") {
+        if (debug >= DEBUG_ON) core.info("Error caught:\n" + e.toString());
+        return false;
+      }
+      throw e;
     }
     if (conclusion !== 'success') throw new Error(`Workflow ${workflowName} failed`);
     return true;
   };
-  async function getMatch(options) {
+  async function getMatch(options, created_at) {
     if (debug >= DEBUG_ON) core.info("The request options for listWorkflowRuns are: " + JSON.stringify(options));
     const { data } = await octokit.actions.listWorkflowRuns(options);
     if (debug >= DEBUG_VERBOSE) core.info(`all matched candidate information: ${JSON.stringify(data, null, 4)}`)
@@ -106,13 +105,17 @@ try {
 
   (async () => {
     try {
+      const { data: { created_at } } = await octokit.actions.getWorkflowRun({
+        owner, repo, run_id: github.context.runId
+      });
+
       let executedTime = 0;
       let workflowsStillNotDone = [...workflows];
       while (workflowsStillNotDone.length > 0) {
         workflows = [...workflowsStillNotDone];
         for (workflowName of workflows) {
           core.info(`Checking ${workflowName}`)
-          const done = await checkIfWorkflowDone(workflowName);
+          const done = await checkIfWorkflowDone(workflowName, created_at);
           if (done == false) {
             core.info(`${workflowName} not done yet`);
             break;
