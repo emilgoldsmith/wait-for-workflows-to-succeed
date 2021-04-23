@@ -29,8 +29,8 @@ try {
       core.info(JSON.stringify(github.context, null, 4));
       core.info(JSON.stringify(data.workflow_runs, null, 4));
       core.info(github.context.sha);
-      // const shaGetter = x => github.context.eventName === 'pull_request' ? x.pull_requests[0].base.sha
-      const filteredForSha = data.workflow_runs.filter(x => x.head_sha === github.context.sha)
+      const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
+      const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
       core.info(JSON.stringify(filteredForSha, null, 4));
       if (filteredForSha.length < 1) return false;
       const mostRecent = filteredForSha[0];
