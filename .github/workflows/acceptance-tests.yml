@@ -27,7 +27,6 @@ jobs:
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
-          debug: "on"
 
   with-succeeding-workflow:
     name: Should Succeed (waiting for succeeding workflow)
@@ -44,7 +43,6 @@ jobs:
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
-          debug: "on"
 
   with-two-succeeding-workflows:
     name: Should Succeed (waiting for two succeeding workflows)
@@ -81,7 +79,6 @@ jobs:
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
-          debug: "on"
 
       - name: Assert error occurred
         if: ${{ steps.test.outcome != 'failure' }}
