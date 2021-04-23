@@ -174,31 +174,31 @@ jobs:
   logging-on:
     name: With logging on
     runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Wait with logging on
-          uses: ./
-          with:
-            workflows: fast-success-fixture.yml
-            wait-interval-seconds: 5
-            wait-max-seconds: 60
-            repo-token: ${{ github.token }}
-            debug: "on"
+      - name: Wait with logging on
+        uses: ./
+        with:
+          workflows: fast-success-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+          debug: "on"
 
   logging-verbose:
     name: With logging on
     runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Wait with logging on
-          uses: ./
-          with:
-            workflows: fast-success-fixture.yml
-            wait-interval-seconds: 5
-            wait-max-seconds: 60
-            repo-token: ${{ github.token }}
-            debug: verbose
+      - name: Wait with logging on
+        uses: ./
+        with:
+          workflows: fast-success-fixture.yml
+          wait-interval-seconds: 5
+          wait-max-seconds: 60
+          repo-token: ${{ github.token }}
+          debug: verbose
