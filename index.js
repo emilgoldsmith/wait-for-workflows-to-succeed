@@ -7,7 +7,7 @@ try {
   );
   const waitMax = parseInt(core.getInput("wait-max-seconds", { required: true }));
   const token = core.getInput("repo-token", { required: true });
-  const workflows = core
+  let workflows = core
     .getInput("workflows", { required: true })
     .split("\n")
     .map((x) => x.trim());
