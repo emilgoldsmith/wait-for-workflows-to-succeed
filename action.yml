@@ -14,7 +14,7 @@ inputs:
     required: true
 
   repo-token:
-    description: The ${{ github.token }} or $GITHUB_TOKEN repo token for your workflow
+    description: The github.token in context or GITHUB_TOKEN env variable repo token for your workflow
     required: true
 
   workflows:
