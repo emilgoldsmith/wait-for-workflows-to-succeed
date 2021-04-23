@@ -2,30 +2,27 @@ name: Acceptance Tests
 on:
   - push
   - pull_request
-  - pull_request_target
 
 jobs:
-  handles-pull-request-target:
-    name: Can handle a pull_request_target event
+  handles-waiting-for-pull-request-target-from-pull-request:
+    name: Can handle a pull_request_target event from a pull request event
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request_target' }}
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Wait for success-fixture
+      - name: Wait for pull_request_target fixture
         uses: ./
         with:
-          workflows: success-fixture.yml
+          workflows: pull-request-target-success-fixture.yml
           wait-interval-seconds: 5
           wait-max-seconds: 60
           repo-token: ${{ github.token }}
-          debug: "on"
 
   with-succeeding-workflow:
     name: Should Succeed (waiting for succeeding workflow)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -41,7 +38,6 @@ jobs:
   with-two-succeeding-workflows:
     name: Should Succeed (waiting for two succeeding workflows)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -59,7 +55,6 @@ jobs:
   workflow-doesnt-exist:
     name: Should Fail (waiting for non existent workflow)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -81,7 +76,6 @@ jobs:
   workflow-run-failed:
     name: Should Fail (waiting for failing workflow)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -103,7 +97,6 @@ jobs:
   workflow-succeeded-in-the-past:
     name: Should Fail (waiting for workflow that isn't running now but did in the past)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -128,7 +121,6 @@ jobs:
   one-failed-one-succeeded-success-first:
     name: Should Fail (one failed and one succeeded with success first)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -152,7 +144,6 @@ jobs:
   one-failed-one-succeeded-failure-first:
     name: Should Fail (one failed and one succeeded with failure first)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -176,7 +167,6 @@ jobs:
   two-failed:
     name: Should Fail (waiting on two failed)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -200,7 +190,6 @@ jobs:
   logging-on:
     name: With logging on
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -217,7 +206,6 @@ jobs:
   logging-verbose:
     name: With logging verbose
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

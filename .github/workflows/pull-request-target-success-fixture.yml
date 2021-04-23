@@ -1,0 +1,11 @@
+name: pull_request_target Success Fixture
+on: pull_request_target
+
+jobs:
+  main:
+    name: Succeeds Slowly
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep
+        shell: bash
+        run: sleep 30
