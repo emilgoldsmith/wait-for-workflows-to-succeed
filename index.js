@@ -37,26 +37,28 @@ try {
       owner, repo, run_id: github.context.runId
     });
     try {
-      const { data } = await octokit.actions.listWorkflowRuns({
+      const options = {
         owner,
         repo,
         workflow_id: workflowName,
         event: github.context.eventName,
         branch: github.context.ref.split('refs/heads/')[1],
         per_page: 5,
-      });
+      }
+      if (debug >= DEBUG_ON) core.info("The request options for listWorkflowRuns are: " + JSON.stringify(options));
+      const { data } = await octokit.actions.listWorkflowRuns();
       const mainSha = github.context.eventName === 'pull_request' ? github.context.payload.pull_request.head.sha : github.context.sha;
       if (debug >= DEBUG_ON) core.info(`expectedSha: ${mainSha}`);
-      if (debug >= DEBUG_ON) core.info(`candidateShas: ${data.workflow_runs.map(x => x.head_sha)}`);
+      if (debug >= DEBUG_ON) core.info(`candidateShas: ${JSON.stringify(data.workflow_runs.map(x => x.head_sha))}`);
       if (debug >= DEBUG_VERBOSE) core.info(`all candidate information: ${JSON.stringify(data, null, 4)}`)
       const filteredForSha = data.workflow_runs.filter(x => x.head_sha === mainSha)
       if (filteredForSha.length < 1) {
-        if (debug > DEBUG_ON) core.info(`No Candidates Matched`);
+        if (debug >= DEBUG_ON) core.info(`No Candidates Matched`);
         return false;
       }
 
       if (debug >= DEBUG_ON) core.info(`this workflow is created_at: ${created_at}`);
-      if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${data.workflow_runs.map(x => x.created_at)}`);
+      if (debug >= DEBUG_ON) core.info(`created_ats of candidates: ${JSON.stringify(data.workflow_runs.map(x => x.created_at))}`);
       const theMatch = filteredForSha.find(x => x.created_at === created_at);
       if (!theMatch) {
         if (debug >= DEBUG_ON) core.info(`No sha matches matched the created_at`)
